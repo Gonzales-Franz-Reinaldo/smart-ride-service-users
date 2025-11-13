@@ -1,0 +1,705 @@
+{
+	"info": {
+		"_postman_id": "524aa4a8-217e-4124-8145-7287418973f5",
+		"name": "Proyecto-Smart-Ride",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42934418",
+		"_collection_link": "https://gonzalesdev.postman.co/workspace/proyectos~3eb176f1-8a78-4be2-a4d0-48e41f363585/collection/42934418-524aa4a8-217e-4124-8145-7287418973f5?action=share&source=collection_link&creator=42934418"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Gonzales\",\n  \"email\": \"juan123@gmail.com\",\n  \"telefono\": \"+59172116567\",\n  \"password\": \"Juan123!\",\n  \"rol\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verifica que la solicitud haya sido exitosa (código 200)",
+									"if (pm.response.code === 200) {",
+									"    // 1. Parsea el cuerpo JSON de la respuesta",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    // 2. Extrae el valor del campo \"access_token\"",
+									"    var token = jsonData.access_token;",
+									"    ",
+									"    // 3. ¡CORRECCIÓN! Guarda el token en la variable de ENTORNO 'token-acceso'",
+									"    // Usa 'pm.globals.set' si 'token-acceso' es global, o 'pm.environment.set' si es de entorno.",
+									"    pm.environment.set(\"token-acceso\", token); // Cambiar \"token\" a \"token-acceso\"",
+									"    ",
+									"    // Opcional: Muestra un mensaje en la Consola de Postman para confirmar",
+									"    console.log(\"Nuevo token guardado en la variable: \" + token);",
+									"} else {",
+									"    console.error(\"Fallo de login. No se pudo obtener el token.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// ADMIN\n{\n  \"email\": \"juan123@gmail.com\",\n  \"password\": \"Juan123!\"\n}\n\n// Pasajero\n// {\n//     \"email\": \"franz123@gmail.com\",\n//     \"password\": \"Franz123!\"\n// }"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh_token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE4MDY5LCJleHAiOjE3NjM2MjI4Njl9.BdE_bXeY3VRRbt1tn0MKDhHJCqDxRck7Z7pD6tIlg7I\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/auth/refresh",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "registrar-usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIyNTgxLCJleHAiOjE3NjMxMDg5ODF9.mFYRqB84f92LvXAaNqBfYeLCcB7wAPzJNsL-xRlR_vQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ramon\",\n  \"apellido\": \"Pérez\",\n  \"email\": \"ramon123@gmail.com\",\n  \"telefono\": \"+59171211347\",\n  \"password\": \"Ramon123!\",\n  \"rol\": \"conductor\",\n  \"fecha_nacimiento\": \"1991-01-01\",\n  \"genero\": \"masculino\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIyNTgxLCJleHAiOjE3NjMxMDg5ODF9.mFYRqB84f92LvXAaNqBfYeLCcB7wAPzJNsL-xRlR_vQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE1OTg3LCJleHAiOjE3NjMxMDIzODd9.TGU6RzCXEJjQBEz9_L0Qx_PRgoDGoeQBBFCewYOe-6s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIyNTgxLCJleHAiOjE3NjMxMDg5ODF9.mFYRqB84f92LvXAaNqBfYeLCcB7wAPzJNsL-xRlR_vQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ramon Carlos\",\n  \"apellido\": \"Pérez\",\n  \"email\": \"ramoncarlos1234@gmail.com\",\n  \"telefono\": \"+59171204560\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE2NDQ0LCJleHAiOjE3NjMxMDI4NDR9.x6TbbS3vmjcu8c_oEqKh9-NUCoanY4BEGpjfqDQ8spY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile-user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIyNTgxLCJleHAiOjE3NjMxMDg5ODF9.mFYRqB84f92LvXAaNqBfYeLCcB7wAPzJNsL-xRlR_vQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"Juan123!\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/auth/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIyNTgxLCJleHAiOjE3NjMxMDg5ODF9.mFYRqB84f92LvXAaNqBfYeLCcB7wAPzJNsL-xRlR_vQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE4MDY5LCJleHAiOjE3NjM2MjI4Njl9.BdE_bXeY3VRRbt1tn0MKDhHJCqDxRck7Z7pD6tIlg7I\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "conductores",
+			"item": [
+				{
+					"name": "get-all-conductores",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoiZnJhbnoxMjNAZ21haWwuY29tIiwicm9sIjoicGFzYWplcm8iLCJpYXQiOjE3NjMwMzA0MDEsImV4cCI6MTc2MzExNjgwMX0.HYoD1aEHmPpFFenm6fsdqOrThyhjHvxlsM-zE8wZsU8\"",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/conductores/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"conductores",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE1OTg3LCJleHAiOjE3NjMxMDIzODd9.TGU6RzCXEJjQBEz9_L0Qx_PRgoDGoeQBBFCewYOe-6s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_usuario\": 6,\n  \"numero_licencia\": \"LIC443456\",\n  \"tipo_licencia\": \"A\",\n  \"fecha_vencimiento_licencia\": \"2029-12-31\",\n  \"marca_auto\": \"Toyota\",\n  \"modelo_auto\": \"Corolla\",\n  \"placa_auto\": \"ABC-1034\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/conductores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"conductores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-conductor",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE1OTg3LCJleHAiOjE3NjMxMDIzODd9.TGU6RzCXEJjQBEz9_L0Qx_PRgoDGoeQBBFCewYOe-6s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_usuario\": 4,\n  \"numero_licencia\": \"LIC123456\",\n  \"tipo_licencia\": \"B\",\n  \"fecha_vencimiento_licencia\": \"2027-12-31\",\n  \"marca_auto\": \"Toyota\",\n  \"modelo_auto\": \"Corolla\",\n  \"placa_auto\": \"ABC-1234\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/conductores/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"conductores",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-conductor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE1OTg3LCJleHAiOjE3NjMxMDIzODd9.TGU6RzCXEJjQBEz9_L0Qx_PRgoDGoeQBBFCewYOe-6s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numero_licencia\": \"LIC1216\",\n  \"tipo_licencia\": \"C\",\n  \"fecha_vencimiento_licencia\": \"2028-12-31\",\n  \"marca_auto\": \"Toyota\",\n  \"modelo_auto\": \"Corolla\",\n  \"placa_auto\": \"ABD-1234\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/conductores/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"conductores",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-conductor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDE1OTg3LCJleHAiOjE3NjMxMDIzODd9.TGU6RzCXEJjQBEz9_L0Qx_PRgoDGoeQBBFCewYOe-6s",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numero_licencia\": \"LIC123756\",\n  \"tipo_licencia\": \"C\",\n  \"fecha_vencimiento_licencia\": \"2028-12-31\",\n  \"marca_auto\": \"Toyota\",\n  \"modelo_auto\": \"Corolla\",\n  \"placa_auto\": \"ABD-1234\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost/api/v1/users/conductores/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"conductores",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "graphql",
+			"item": [
+				{
+					"name": "get-all-users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoianVhbi5wZXJlekBleGFtcGxlLmNvbSIsInJvbCI6ImFkbWluIiwiaWF0IjoxNzYzMDIwNzc5LCJleHAiOjE3NjMxMDcxNzl9.j95sCz0oMjbUjzMSAqCsXhetBqB7Bq7vu8w7bx9Yo1E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAllUsers {\n  users {\n    id_usuario\n    nombre\n    apellido\n    email\n    telefono\n    rol\n    estado_cuenta\n    email_verificado\n    telefono_verificado\n    fecha_registro\n    ultima_conexion\n    conductor {\n      id_conductor\n      numero_licencia\n      marca_auto\n      modelo_auto\n      placa_auto\n      estado_conductor\n      calificacion_promedio\n      total_viajes\n    }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

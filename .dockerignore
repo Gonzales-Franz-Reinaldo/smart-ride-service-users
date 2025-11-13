@@ -1,0 +1,47 @@
+# filepath: [.dockerignore](http://_vscodecontentref_/0)
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build
+dist
+build
+*.tsbuildinfo
+
+# Tests
+coverage
+.nyc_output
+*.test.ts
+*.spec.ts
+test/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docs
+*.md
+[README.md](http://_vscodecontentref_/1)
+
+# Environment
+.env
+.env.*
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
