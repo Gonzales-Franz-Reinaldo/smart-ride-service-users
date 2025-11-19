@@ -3,9 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
+  Patch,
   Delete,
+  Query,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -18,6 +19,7 @@ import {
   ApiBearerAuth,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -29,10 +31,11 @@ import { RolesGuard } from '../../../common/guards/roles.guard';
 import { Roles, UserRole } from '../../../common/decorators/roles.decorator';
 import { User } from '../entities/user.entity';
 import { Conductor } from '../entities/conductor.entity';
+import { UserResponseDto } from '../dto/user-response.dto';
+import { Public } from '../../../common/decorators/public.decorator';
 
 @ApiTags('Usuarios')
 @Controller('users')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -181,19 +184,35 @@ export class UsersController {
   // ENDPOINTS PARA CONDUCTORES
   // ====================================
 
+  /**
+   * 🚀 ENDPOINT PÚBLICO PARA DESPACHO SERVICE
+   *  Sin autenticación requerida
+   */
+  @Public()
   @Get('conductores/all')
   @ApiOperation({
-    summary: 'Obtener todos los conductores',
-    description:
-      'Lista todos los perfiles de conductores registrados con información de vehículos y calificaciones.',
+    summary: 'Listar todos los conductores (Público - Para Despacho Service)',
+    description: 'Endpoint sin autenticación para que otros servicios puedan consultar conductores disponibles.',
+  })
+  @ApiQuery({
+    name: 'estado',
+    required: false,
+    enum: ['disponible', 'ocupado', 'inactivo', 'fuera_servicio'],
+    description: 'Filtrar por estado del conductor',
   })
   @ApiResponse({
     status: 200,
-    description: 'Lista de conductores',
-    type: [Conductor],
+    description: 'Lista de conductores filtrados por estado',
+    type: [UserResponseDto],
   })
-  findAllConductores(): Promise<Conductor[]> {
-    return this.usersService.findAllConductores();
+  async getAllConductores(@Query('estado') estado?: string) {
+    const conductores = await this.usersService.getAllConductores(estado);
+
+    return {
+      success: true,
+      data: conductores,
+      total: conductores.length,
+    };
   }
 
   @Get('conductores/:id')
@@ -231,10 +250,17 @@ export class UsersController {
     description: 'Conductor creado exitosamente',
     type: Conductor,
   })
-  @ApiResponse({ status: 403, description: 'Acceso denegado - Requiere rol admin' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acceso denegado - Requiere rol admin',
+  })
   @ApiResponse({
     status: 400,
     description: 'Usuario no tiene rol de conductor o perfil ya existe',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Acceso denegado - Requiere rol admin',
   })
   @ApiBody({
     type: CreateConductorDto,
@@ -316,7 +342,10 @@ export class UsersController {
     example: 1,
   })
   @ApiResponse({ status: 204, description: 'Conductor eliminado' })
-  @ApiResponse({ status: 403, description: 'Acceso denegado - Requiere rol admin' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acceso denegado - Requiere rol admin',
+  })
   removeConductor(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.usersService.removeConductor(id);
   }

@@ -212,4 +212,43 @@ export class UsersService {
 
     return conductor;
   }
+
+  /**
+   * 🚀 MÉTODO PÚBLICO PARA DESPACHO SERVICE
+   * Obtener conductores disponibles sin autenticación
+   * @param estado - Estado del conductor (opcional): 'disponible', 'ocupado', 'inactivo', 'fuera_servicio'
+   * @returns Lista de conductores filtrados por estado
+   */
+  async getAllConductores(estado?: string): Promise<Conductor[]> {
+    try {
+      const conductores = await this.conductorRepository.findAll();
+
+      // Si se especifica un estado, filtrar
+      if (estado) {
+        const conductoresFiltrados = conductores.filter(
+          (conductor) => conductor.estado_conductor === estado,
+        );
+
+        this.logger.log(
+          `Conductores obtenidos (estado: ${estado}): ${conductoresFiltrados.length}`,
+          'UsersService',
+        );
+
+        return conductoresFiltrados;
+      }
+
+      this.logger.log(
+        `Todos los conductores obtenidos: ${conductores.length}`,
+        'UsersService',
+      );
+
+      return conductores;
+    } catch (error) {
+      this.logger.error(
+        `Error al obtener conductores: ${error.message}`,
+        'UsersService',
+      );
+      throw error;
+    }
+  }
 }
