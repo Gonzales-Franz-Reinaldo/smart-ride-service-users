@@ -26,6 +26,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { CreateConductorDto } from '../dto/create-conductor.dto';
 import { UpdateConductorDto } from '../dto/update-conductor.dto';
+import { UpdateConductorEstadoDto } from '../dto/update-conductor-estado.dto';
 import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 import { Roles, UserRole } from '../../../common/decorators/roles.decorator';
@@ -34,7 +35,7 @@ import { Conductor } from '../entities/conductor.entity';
 import { UserResponseDto } from '../dto/user-response.dto';
 import { Public } from '../../../common/decorators/public.decorator';
 
-@ApiTags('Usuarios')
+@ApiTags('Users - Conductores')
 @Controller('users')
 @ApiBearerAuth()
 export class UsersController {
@@ -185,8 +186,68 @@ export class UsersController {
   // ====================================
 
   /**
-   * 🚀 ENDPOINT PÚBLICO PARA DESPACHO SERVICE
-   *  Sin autenticación requerida
+   *  ENDPOINT PÚBLICO PARA RESERVAS SERVICE
+   * Obtener conductor por ID de usuario
+   */
+  @Public()
+  @Get('conductores/by-user/:userId')
+  @ApiOperation({
+    summary: 'Obtener conductor por ID de usuario (Público)',
+    description: 'Endpoint sin autenticación para que Reservas Service pueda mapear id_usuario → id_conductor',
+  })
+  @ApiParam({ 
+    name: 'userId', 
+    type: 'number', 
+    description: 'ID del usuario',
+    example: 2
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Conductor encontrado',
+    schema: {
+      example: {
+        success: true,
+        data: {
+          id_conductor: 1,
+          id_usuario: 2,
+          numero_licencia: 'LIC123456789',
+          tipo_licencia: 'B',
+          fecha_vencimiento_licencia: '2027-12-31',
+          marca_auto: 'Toyota',
+          modelo_auto: 'Corolla',
+          placa_auto: 'ABC-1234',
+          estado_conductor: 'ocupado',
+          calificacion_promedio: 5.00,
+          total_viajes: 0,
+          created_at: '2025-11-20T02:19:11.123Z',
+          updated_at: '2025-11-20T02:22:21.456Z'
+        }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Usuario no tiene perfil de conductor',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'No se encontró perfil de conductor para el usuario 2',
+        error: 'Not Found'
+      }
+    }
+  })
+  async getConductorByUserId(
+    @Param('userId', ParseIntPipe) userId: number
+  ) {
+    const conductor = await this.usersService.getConductorByUserId(userId);
+
+    //  Retornar directamente el conductor sin envolver de nuevo
+    return conductor;
+  }
+
+  /**
+   * ENDPOINT PÚBLICO PARA DESPACHO SERVICE
+   * Sin autenticación requerida
    */
   @Public()
   @Get('conductores/all')
@@ -348,5 +409,86 @@ export class UsersController {
   })
   removeConductor(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.usersService.removeConductor(id);
+  }
+
+  /**
+   * ENDPOINT PÚBLICO: Actualizar estado del conductor
+   * Usado por Despacho Service para cambiar estado (disponible/ocupado)
+   */
+  @Public()
+  @Patch(':id/estado')
+  @ApiOperation({
+    summary: 'Actualizar estado del conductor (público para microservicios)',
+    description: 'Endpoint sin autenticación para que Despacho Service pueda cambiar estado',
+  })
+  @ApiParam({ 
+    name: 'id', 
+    type: 'number', 
+    description: 'ID del CONDUCTOR (no del usuario)',
+    example: 1
+  })
+  @ApiBody({
+    type: UpdateConductorEstadoDto,
+    examples: {
+      disponible: {
+        summary: 'Marcar como disponible',
+        value: { estado_conductor: 'disponible' },
+      },
+      ocupado: {
+        summary: 'Marcar como ocupado',
+        value: { estado_conductor: 'ocupado' },
+      },
+    },
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Estado actualizado',
+    schema: {
+      example: {
+        success: true,
+        message: 'Conductor 1 actualizado a estado ocupado',
+        data: {
+          id_conductor: 1,
+          estado_conductor: 'ocupado',
+          // ... otros campos
+        }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Estado inválido',
+    schema: {
+      example: {
+        statusCode: 400,
+        message: 'El estado debe ser: disponible, ocupado, inactivo o fuera_servicio',
+        error: 'Bad Request'
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Conductor no encontrado',
+    schema: {
+      example: {
+        statusCode: 404,
+        message: 'Conductor con ID 999 no encontrado',
+        error: 'Not Found'
+      }
+    }
+  })
+  async updateConductorEstado(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateConductorEstadoDto,
+  ) {
+    const conductor = await this.usersService.updateConductor(id, {
+      estado_conductor: updateDto.estado_conductor,
+    });
+
+    return {
+      success: true,
+      message: `Conductor ${id} actualizado a estado ${updateDto.estado_conductor}`,
+      data: conductor,
+    };
   }
 }
